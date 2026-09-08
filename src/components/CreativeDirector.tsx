@@ -54,10 +54,11 @@ function selectorFor(element: Element) {
     let piece = node.tagName.toLowerCase();
     const classes = Array.from(node.classList).filter(Boolean).slice(0, 2);
     if (classes.length) piece += classes.map((name) => `.${cssEscape(name)}`).join("");
-    const parent = node.parentElement;
+    const current: Element = node;
+    const parent: Element | null = current.parentElement;
     if (parent) {
-      const sameTag = Array.from(parent.children).filter((child) => child.tagName === node?.tagName);
-      if (sameTag.length > 1) piece += `:nth-of-type(${sameTag.indexOf(node) + 1})`;
+      const sameTag = Array.from(parent.children).filter((child) => child.tagName === current.tagName);
+      if (sameTag.length > 1) piece += `:nth-of-type(${sameTag.indexOf(current) + 1})`;
     }
     pieces.unshift(piece);
     node = parent;
