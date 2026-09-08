@@ -444,6 +444,9 @@ export async function healthCheck(base44: any, user: any) {
     main_branch: false,
     design_drafts: false,
     creative_assets: false,
+    media: true,
+    ai_image_generation: typeof base44?.integrations?.Core?.GenerateImage === "function",
+    ai_video_generation: typeof base44?.integrations?.Core?.GenerateVideo === "function",
   };
   const details: Record<string, string> = {};
   try {
