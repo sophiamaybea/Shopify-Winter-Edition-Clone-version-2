@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Base44 backend functions run on Deno and are deployed separately from Next.js.
+    "base44/**",
     // Downloaded raw site mirrors / research material (not app source):
     "reference/**",
     "www.shopify.com/**",
