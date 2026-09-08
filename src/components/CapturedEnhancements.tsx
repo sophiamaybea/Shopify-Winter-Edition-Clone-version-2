@@ -348,7 +348,7 @@ export function CapturedEnhancements() {
           iframe.title = launcher
             .closest<HTMLElement>("article")
             ?.querySelector("h2, h3, h4")
-            ?.textContent?.trim() ?? "Shopify Editions video";
+            ?.textContent?.trim() ?? "Bea Sophia video";
           iframe.allow =
             "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
           iframe.allowFullscreen = true;

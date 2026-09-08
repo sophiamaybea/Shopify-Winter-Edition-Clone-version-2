@@ -34,14 +34,14 @@ export function Header() {
           className="flex min-w-0 shrink items-center gap-2 truncate text-sm font-semibold whitespace-nowrap"
         >
           <Logo />
-          <span className="truncate">Shopify Editions</span>
+          <span className="truncate">Bea Sophia</span>
           <span className="hidden font-normal text-white/60 sm:inline">
-            Winter &apos;26
+            Writing School
           </span>
         </a>
         <nav className="hidden items-center gap-6 text-sm glg:flex">
           <button className="flex items-center gap-1">
-            Editions
+            Courses
             <svg width="9" height="6" viewBox="0 0 9 6" fill="none" aria-hidden>
               <path
                 d="M1 1l3.5 3.5L8 1"
@@ -53,7 +53,7 @@ export function Header() {
             </svg>
           </button>
           <button className="flex items-center gap-1.5">
-            Search
+            The Method
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
               <circle cx="5.2" cy="5.2" r="4" stroke="currentColor" strokeWidth="1.2" />
               <path d="M8.5 8.5L11 11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
@@ -65,10 +65,10 @@ export function Header() {
         className="hidden items-center gap-6 text-sm text-white sm:flex"
         style={{ mixBlendMode: "difference" }}
       >
-        <a href="#">Shopify.com</a>
+        <a href="#">My Writing</a>
       </div>
       <div className="shrink-0">
-        <PillButton>Start for free</PillButton>
+        <PillButton>Try it free</PillButton>
       </div>
     </header>
   );

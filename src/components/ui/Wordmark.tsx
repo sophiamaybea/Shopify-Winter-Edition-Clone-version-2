@@ -8,9 +8,9 @@ export function Wordmark({ size = "sm" }: { size?: "sm" | "lg" }) {
     >
       The
       <br />
-      Ren<span className="font-serif font-normal italic">ai</span>ssance
+      Writing
       <br />
-      Edition
+      School
     </p>
   );
 }

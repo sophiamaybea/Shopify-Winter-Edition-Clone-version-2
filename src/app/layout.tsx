@@ -3,9 +3,9 @@ import { SmoothScroll } from "@/components/ui/SmoothScroll";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Shopify Editions | Winter '26",
+  title: "Online Poetry & Creative Writing Courses | Bea Sophia",
   description:
-    "The commerce renaissance is here. Explore 150+ product updates across AI, retail, and more.",
+    "Interactive poetry and creative writing courses built around close reading, deliberate practice and revision. Make stronger drafts, finish real work and build a private writing archive.",
 };
 
 export default function RootLayout({

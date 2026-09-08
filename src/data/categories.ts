@@ -5,16 +5,16 @@ export interface CategoryMeta {
 }
 
 export const categories: CategoryMeta[] = [
-  { id: "sidekick", numeral: "I", name: "Sidekick" },
-  { id: "agentic", numeral: "II", name: "Agentic" },
-  { id: "online", numeral: "III", name: "Online" },
-  { id: "retail", numeral: "IV", name: "Retail" },
-  { id: "marketing", numeral: "V", name: "Marketing" },
-  { id: "checkout", numeral: "VI", name: "Checkout" },
-  { id: "operations", numeral: "VII", name: "Operations" },
-  { id: "shop-app", numeral: "VIII", name: "Shop app" },
-  { id: "b2b", numeral: "IX", name: "B2B" },
-  { id: "finance", numeral: "X", name: "Finance" },
-  { id: "shipping", numeral: "XI", name: "Shipping" },
-  { id: "developer", numeral: "XII", name: "Developer" },
+  { id: "sidekick", numeral: "I", name: "Method" },
+  { id: "agentic", numeral: "II", name: "Path" },
+  { id: "online", numeral: "III", name: "Courses" },
+  { id: "retail", numeral: "IV", name: "Practice" },
+  { id: "marketing", numeral: "V", name: "Feedback" },
+  { id: "checkout", numeral: "VI", name: "Revision" },
+  { id: "operations", numeral: "VII", name: "Finish" },
+  { id: "shop-app", numeral: "VIII", name: "Prompts" },
+  { id: "b2b", numeral: "IX", name: "Archive" },
+  { id: "finance", numeral: "X", name: "Support" },
+  { id: "shipping", numeral: "XI", name: "Proof" },
+  { id: "developer", numeral: "XII", name: "Questions" },
 ];

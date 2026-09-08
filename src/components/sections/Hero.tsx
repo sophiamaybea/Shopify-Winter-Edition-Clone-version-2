@@ -41,9 +41,9 @@ export function Hero() {
           >
             <Wordmark size="lg" />
             <p className="mt-8 font-serif text-lg leading-snug">
-              A new world of commerce.
+              Finish better writing.
               <br />
-              150+ product updates.
+              Not just another writing course.
             </p>
             <div className="mt-6">
               <RomanNav tone="dark" />
