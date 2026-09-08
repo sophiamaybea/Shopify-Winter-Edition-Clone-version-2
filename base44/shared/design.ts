@@ -144,7 +144,7 @@ export async function getGitHubToken(base44: any) {
   }
 }
 
-async function githubFetch(token: string, path: string, init: RequestInit = {}) {
+export async function githubFetch(token: string, path: string, init: RequestInit = {}) {
   const response = await fetch(`https://api.github.com${path}`, {
     ...init,
     headers: {
