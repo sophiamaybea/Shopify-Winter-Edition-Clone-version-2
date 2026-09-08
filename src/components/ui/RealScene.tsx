@@ -488,6 +488,8 @@ export function RealScene({
       video: HTMLVideoElement;
     }[] = [];
     const ownedVideos = new Set<HTMLVideoElement>();
+    const ownedImages = new Set<HTMLImageElement>();
+    const imageAnimationFrames: number[] = [];
 
     function theatreClipKey(clipName: string) {
       return clipName.replace(/[ .-]/g, "_");
@@ -714,6 +716,58 @@ export function RealScene({
       });
     }
 
+    function loadImagePlane(path: string, assetKey: string) {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = path;
+      ownedImages.add(img);
+      const onReady = () => {
+        if (disposed) return;
+        const canvas = document.createElement("canvas");
+        canvas.width = img.naturalWidth || 1024;
+        canvas.height = img.naturalHeight || 1024;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        const drawFrame = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          texture.needsUpdate = true;
+        };
+        drawFrame();
+        const animate = () => {
+          if (disposed) return;
+          drawFrame();
+          imageAnimationFrames.push(requestAnimationFrame(animate));
+        };
+        imageAnimationFrames.push(requestAnimationFrame(animate));
+        const aspect =
+          canvas.width > 0 ? canvas.height / canvas.width : 1;
+        const material = new THREE.MeshBasicMaterial({
+          map: texture,
+          side: THREE.DoubleSide,
+          transparent: true,
+          depthWrite: false,
+        });
+        const plane = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+        plane.scale.set(1, aspect, 1);
+        const group = new THREE.Group();
+        group.add(plane);
+        scene.add(group);
+        assetObjects.push({ key: assetKey, object: group });
+        applyAssetTransform(assetKey, group, camState.t);
+      };
+      if (img.complete && img.naturalWidth > 0) {
+        onReady();
+      } else {
+        img.addEventListener("load", onReady, { once: true });
+        img.addEventListener("error", () => {
+          if (!disposed) container!.dataset.sceneStatus = "asset-error";
+        }, { once: true });
+      }
+    }
+
     function loadVideoPlane(
       path: string,
       fallbackPath: string,
@@ -920,6 +974,7 @@ export function RealScene({
     orderedAssets.forEach((asset, index) => {
       const key = `asset-${index + 1}`;
       if (asset.kind === "texture") loadTexturePlane(asset.src, key);
+      else if (asset.kind === "image") loadImagePlane(asset.src, key);
       else if (asset.kind === "video")
         loadVideoPlane(asset.src, asset.fallback, key);
       else loadModel(asset.src, key);
@@ -1223,6 +1278,10 @@ export function RealScene({
         video.pause();
         video.removeAttribute("src");
         video.load();
+      }
+      for (const frame of imageAnimationFrames) cancelAnimationFrame(frame);
+      for (const img of ownedImages) {
+        img.src = "";
       }
       if (renderer.domElement.parentElement === container) {
         container.removeChild(renderer.domElement);

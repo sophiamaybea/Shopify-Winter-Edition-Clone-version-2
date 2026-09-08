@@ -236,6 +236,8 @@ export class SceneRuntime {
   private readonly animationGroups: AnimationGroup[] = [];
   private readonly videoGroups: VideoGroup[] = [];
   private readonly ownedVideos = new Set<HTMLVideoElement>();
+  private readonly ownedImages = new Set<HTMLImageElement>();
+  private imageAnimationFrames: number[] = [];
   private readonly pointLights: Array<{
     key: string;
     light: THREE.PointLight;
@@ -404,6 +406,13 @@ export class SceneRuntime {
       video.removeAttribute("src");
       video.load();
     }
+    for (const frame of this.imageAnimationFrames)
+      cancelAnimationFrame(frame);
+    this.imageAnimationFrames = [];
+    for (const img of this.ownedImages) {
+      img.src = "";
+    }
+    this.ownedImages.clear();
     disposeObjectResources(this.scene, this.protectedTextures);
     this.scene.environment = null;
     this.scene.background = null;
@@ -484,6 +493,11 @@ export class SceneRuntime {
       return;
     }
 
+    if (asset.kind === "image") {
+      this.loadImageInto(asset.src, destination, assetKey);
+      return;
+    }
+
     this.loadVideoInto(asset.src, asset.fallback, destination, assetKey);
   }
 
@@ -526,6 +540,75 @@ export class SceneRuntime {
         else this.markAssetError();
       }
     );
+  }
+
+  private loadImageInto(
+    path: string,
+    destination: THREE.Group,
+    assetKey: string
+  ) {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = path;
+    this.ownedImages.add(img);
+
+    const onReady = () => {
+      if (this.disposed) return;
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth || 1024;
+      canvas.height = img.naturalHeight || 1024;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        this.markAssetError();
+        return;
+      }
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+
+      const drawFrame = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        texture.needsUpdate = true;
+      };
+      drawFrame();
+
+      const animate = () => {
+        if (this.disposed) return;
+        drawFrame();
+        this.imageAnimationFrames.push(
+          requestAnimationFrame(animate)
+        );
+      };
+      this.imageAnimationFrames.push(
+        requestAnimationFrame(animate)
+      );
+
+      const aspect =
+        canvas.width > 0 ? canvas.height / canvas.width : 1;
+      const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        side: THREE.DoubleSide,
+        transparent: true,
+        depthWrite: false,
+      });
+      const plane = new THREE.Mesh(
+        new THREE.PlaneGeometry(2, 2),
+        material
+      );
+      plane.scale.set(1, aspect, 1);
+      destination.add(plane);
+      this.applyAssetTransform(assetKey, destination, this.currentTime);
+      this.markAssetLoaded();
+    };
+
+    if (img.complete && img.naturalWidth > 0) {
+      onReady();
+    } else {
+      img.addEventListener("load", onReady, { once: true });
+      img.addEventListener("error", () => this.markAssetError(), {
+        once: true,
+      });
+    }
   }
 
   private loadVideoInto(

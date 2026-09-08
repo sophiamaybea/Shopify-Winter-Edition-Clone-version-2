@@ -1,7 +1,8 @@
 export type SceneAsset =
   | { kind: "model"; src: string }
   | { kind: "texture"; src: string }
-  | { kind: "video"; src: string; fallback: string };
+  | { kind: "video"; src: string; fallback: string }
+  | { kind: "image"; src: string };
 
 export interface SceneDefinition {
   assets: SceneAsset[];
@@ -14,6 +15,7 @@ export interface SceneDefinition {
 
 const model = (src: string): SceneAsset => ({ kind: "model", src });
 const texture = (src: string): SceneAsset => ({ kind: "texture", src });
+const image = (src: string): SceneAsset => ({ kind: "image", src });
 const video = (src: string, fallback: string): SceneAsset => ({
   kind: "video",
   src,
@@ -29,7 +31,7 @@ const environment = "/assets/3d/textures/studio_small_09_1k.pmrem.ktx2";
 export const scenes = {
   hero: {
     assets: [
-      model("/assets/3d/models/EW26_Hero_251207v3_compressed-optimized.glb"),
+      image("/assets/hero-replacement.gif"),
       texture("/assets/3d/textures/Hero-bg-hires-optimized.ktx2"),
     ],
     theatre: "/assets/3d/theatre/HeroScene.theatre-project-state_15.json",
