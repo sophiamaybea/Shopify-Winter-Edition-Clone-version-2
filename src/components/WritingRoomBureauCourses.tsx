@@ -136,14 +136,20 @@ function CourseTicket({ course }: { course: Course }) {
 }
 
 export function WritingRoomBureauCourses() {
-  const [mount] = useState<HTMLElement | null>(() => {
-    if (typeof document === "undefined") return null;
+  const [mount, setMount] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
     const portal = document.createElement("div");
     portal.dataset.wrbCoursePortal = "true";
     portal.style.width = "100%";
     portal.style.pointerEvents = "auto";
-    return portal;
-  });
+    setMount(portal);
+
+    return () => {
+      portal.remove();
+      setMount(null);
+    };
+  }, []);
   const [active, setActive] = useState<Course | null>(null);
   const rootRef = useRef<HTMLElement | null>(null);
   const hiddenNodes = useRef<Array<{ element: HTMLElement; display: string }>>([]);
