@@ -283,6 +283,7 @@ export function sanitizeDraft(draft: any) {
     owner_user_id,
     applied_by,
     previewed_by,
+    edits,
     ...safe
   } = draft;
   return safe;
