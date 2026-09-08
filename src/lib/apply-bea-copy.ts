@@ -5,6 +5,22 @@ type AstNode = any;
 type AstElement = any;
 
 const EXCLUDED_TAGS = new Set(['script', 'style', 'svg', 'defs', 'path', 'template', 'noscript', 'canvas', 'video', 'source', 'picture']);
+const EXACT_REPLACE_EXCLUDED_TAGS = new Set(['script', 'style', 'defs', 'path', 'template', 'noscript']);
+
+const SECTION_HEADERS: Record<string, { oldTitle: string; title: string; strapline: string }> = {
+  sidekick: { oldTitle: 'SIDEKICK', title: 'THE METHOD', strapline: 'Study the decision. Practise the move. Finish the work.' },
+  agentic: { oldTitle: 'AGENTIC COMMERCE', title: 'YOUR PATH', strapline: 'One piece of writing. Repeatedly improved.' },
+  online: { oldTitle: 'SELL ONLINE', title: 'THE COURSES', strapline: 'Different rooms. Different problems. The same active method.' },
+  retail: { oldTitle: 'SELL IN PERSON', title: 'THE PRACTICE LAB', strapline: 'Do the smallest useful version first.' },
+  marketing: { oldTitle: 'MARKETING', title: 'FEEDBACK', strapline: 'Specific enough to change the next draft.' },
+  checkout: { oldTitle: 'CHECKOUT', title: 'REVISION', strapline: 'Do not polish everything. Change something.' },
+  operations: { oldTitle: 'RUN YOUR BUSINESS', title: 'FINISH THE WORK', strapline: 'A course should produce more than completed lessons.' },
+  'shop-app': { oldTitle: 'SHOP APP', title: 'THE PROMPT ROOM', strapline: 'Prompts that teach you something about your writing.' },
+  b2b: { oldTitle: 'B2B', title: 'YOUR ARCHIVE', strapline: 'Keep what you notice.' },
+  finance: { oldTitle: 'MONEY', title: 'SUPPORT', strapline: 'Enough structure to keep moving. Enough freedom to remain a writer.' },
+  shipping: { oldTitle: 'SHIPPING', title: 'WHAT CHANGES', strapline: 'Judge the course by the work it helps you make.' },
+  developer: { oldTitle: 'DEVELOPER PLATFORM', title: 'QUESTIONS', strapline: 'Everything worth knowing before you begin.' },
+};
 const PRIMARY_TAGS = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'button', 'li', 'dt', 'dd', 'figcaption']);
 const BLOCK_DESCENDANT_TAGS = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'li', 'dt', 'dd']);
 const TEXT_CLASS_RE = /(headline|bodycopy|narrative|eyebrow|label|title|subtitle|heading|copy|caption|cta|button|link|text)/i;
@@ -143,6 +159,42 @@ function findBySectionId(root: AstNode, sectionId: string): AstElement | undefin
   return undefined;
 }
 
+function findDeepestExactTextElement(root: AstNode, target: string): AstElement | undefined {
+  let found: AstElement | undefined;
+  const wanted = normalize(target).toLowerCase();
+
+  const walk = (node: AstNode) => {
+    if (!node) return;
+    if (isElement(node) && EXACT_REPLACE_EXCLUDED_TAGS.has(node.tagName)) return;
+    for (const child of node.childNodes ?? []) walk(child);
+    if (isElement(node) && normalize(elementText(node)).toLowerCase() === wanted) found = node;
+  };
+
+  walk(root);
+  return found;
+}
+
+function insertAfter(reference: AstElement, html: string) {
+  const parent = reference.parentNode as AstElement | undefined;
+  if (!parent?.childNodes) return;
+  const index = parent.childNodes.indexOf(reference);
+  if (index < 0) return;
+  const fragment = parseFragment(html);
+  const nodes = fragment.childNodes ?? [];
+  for (const node of nodes) node.parentNode = parent;
+  parent.childNodes.splice(index + 1, 0, ...nodes);
+}
+
+function applySectionHeader(section: AstElement, config: { oldTitle: string; title: string; strapline: string }) {
+  const titleElement = findDeepestExactTextElement(section, config.oldTitle);
+  if (!titleElement) return;
+  distributeText(titleElement, config.title);
+  insertAfter(
+    titleElement,
+    `<p data-bea-section-strapline="true" class="bodycopy-1" style="max-width:56rem;margin-top:1rem">${escapeHtml(config.strapline)}</p>`,
+  );
+}
+
 function findFooter(root: AstNode): AstElement | undefined {
   if (isElement(root) && (root.tagName === 'footer' || /footer/i.test(className(root)))) return root;
   for (const child of root.childNodes ?? []) {
@@ -200,7 +252,7 @@ function escapeHtml(value: string): string {
 
 function replaceExactText(root: AstNode, map: Map<string, string>) {
   const walk = (node: AstNode) => {
-    if (isElement(node) && EXCLUDED_TAGS.has(node.tagName)) return;
+    if (isElement(node) && EXACT_REPLACE_EXCLUDED_TAGS.has(node.tagName)) return;
     if (node.nodeName === '#text') {
       const current = normalize(node.value ?? '');
       const replacement = map.get(current);
@@ -214,7 +266,7 @@ function replaceExactText(root: AstNode, map: Map<string, string>) {
 
 function replaceBrandResidue(root: AstNode) {
   const walk = (node: AstNode) => {
-    if (isElement(node) && EXCLUDED_TAGS.has(node.tagName)) return;
+    if (isElement(node) && EXACT_REPLACE_EXCLUDED_TAGS.has(node.tagName)) return;
     if (node.nodeName === '#text' && typeof node.value === 'string') {
       node.value = node.value
         .replace(/Shopify Editions/gi, 'Bea Sophia Writing School')
@@ -228,6 +280,12 @@ function replaceBrandResidue(root: AstNode) {
 
 export function applyBeaCopy(html: string): string {
   const document = parseFragment(html);
+
+  // Replace chapter headers in their own section before changing repeated nav labels.
+  for (const [sectionId, config] of Object.entries(SECTION_HEADERS)) {
+    const section = findBySectionId(document, sectionId);
+    if (section) applySectionHeader(section, config);
+  }
 
   const globalMap = new Map<string, string>([
     ...navCopy.map(([from, to]) => [from, to] as [string, string]),
@@ -243,7 +301,15 @@ export function applyBeaCopy(html: string): string {
 
   for (const [sectionId, copy] of Object.entries(sectionCopy)) {
     const section = findBySectionId(document, sectionId);
-    if (section) applyOrderedCopy(section, copy);
+    if (!section) continue;
+
+    if (sectionId === 'hero') {
+      applyOrderedCopy(section, copy);
+      continue;
+    }
+
+    // Chapter number/title/strapline are handled by the preserved Shopify chapter header.
+    applyOrderedCopy(section, copy.slice(3));
   }
 
   const footer = findFooter(document);
