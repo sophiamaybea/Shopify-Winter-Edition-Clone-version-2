@@ -1,0 +1,260 @@
+{
+  "name": "DesignDraft",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "owner_user_id": {
+      "type": "string",
+      "rls": {
+        "read": {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
+    },
+    "conversation_id": {
+      "type": "string"
+    },
+    "created_by": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "staged",
+        "previewed",
+        "applying",
+        "applied",
+        "rejected",
+        "superseded",
+        "failed"
+      ],
+      "default": "staged",
+      "rls": {
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "default": 1
+    },
+    "preview_revision": {
+      "type": "integer"
+    },
+    "approval_token_hash": {
+      "type": "string",
+      "rls": {
+        "read": {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
+    },
+    "approval_token_expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "rls": {
+        "read": {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
+    },
+    "base_commit_sha": {
+      "type": "string",
+      "rls": {
+        "read": {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
+    },
+    "applied_commit_sha": {
+      "type": "string",
+      "rls": {
+        "read": {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
+    },
+    "applied_commit_url": {
+      "type": "string",
+      "rls": {
+        "read": {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
+    },
+    "applied_by": {
+      "type": "string",
+      "rls": {
+        "read": {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
+    },
+    "previewed_by": {
+      "type": "string",
+      "rls": {
+        "read": {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
+    },
+    "failure_code": {
+      "type": "string",
+      "rls": {
+        "read": {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
+    },
+    "failure_message": {
+      "type": "string",
+      "rls": {
+        "read": {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
+    },
+    "preview_html": {
+      "type": "string"
+    },
+    "edits": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "file_count": {
+      "type": "integer"
+    },
+    "aggregate_bytes": {
+      "type": "integer"
+    },
+    "supersedes_draft_id": {
+      "type": "string"
+    },
+    "revert_of_draft_id": {
+      "type": "string"
+    },
+    "commit_message": {
+      "type": "string"
+    },
+    "target_summary": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "owner_user_id",
+    "conversation_id",
+    "created_by",
+    "status",
+    "revision",
+    "base_commit_sha",
+    "preview_html",
+    "edits"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "data.owner_user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
