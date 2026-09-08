@@ -1,9 +1,12 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { applyBeaCopy } from "@/lib/apply-bea-copy";
 
-const capturedPageHtml = readFileSync(
-  path.join(process.cwd(), "src/data/captured-page.html"),
-  "utf8"
+const capturedPageHtml = applyBeaCopy(
+  readFileSync(
+    path.join(process.cwd(), "src/data/captured-page.html"),
+    "utf8"
+  )
 );
 
 /**
