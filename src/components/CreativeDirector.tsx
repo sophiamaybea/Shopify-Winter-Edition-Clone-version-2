@@ -392,15 +392,17 @@ export function CreativeDirector() {
 
   return (
     <>
-      <button
-        type="button"
-        className={styles.launcher}
-        data-creative-director-ui="true"
-        onClick={() => setOpen(true)}
-        aria-label="Open Creative Director"
-      >
-        Creative Director
-      </button>
+      {user?.role === "admin" && (
+        <button
+          type="button"
+          className={styles.launcher}
+          data-creative-director-ui="true"
+          onClick={() => setOpen(true)}
+          aria-label="Open Creative Director"
+        >
+          Creative Director
+        </button>
+      )}
 
       {open && (
         <div className={styles.panel} ref={panelRef} data-creative-director-ui="true">
@@ -450,6 +452,13 @@ export function CreativeDirector() {
               >
                 Sign in with Google
               </button>
+            </div>
+          ) : user.role !== "admin" ? (
+            <div className={styles.signIn}>
+              <div>
+                <div className={styles.title}>Creative Director access restricted</div>
+                <p>This surface is available only to authorised application administrators.</p>
+              </div>
             </div>
           ) : (
             <>
