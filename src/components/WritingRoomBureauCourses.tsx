@@ -17,6 +17,8 @@ type Course = {
   line2: string;
   description: string;
   className: string;
+  artifactSrc: string;
+  stampSrc: string;
   perforated?: boolean;
 };
 
@@ -34,6 +36,8 @@ const COURSES: Course[] = [
     description:
       "A revision room built around evidence, contradiction, omission and the sharper second look.",
     className: styles.registry,
+    artifactSrc: "/wrb/course-artifacts/01_night-clerks-registry.svg",
+    stampSrc: "/wrb/course-stamps/01_night-clerks-registry_stamp.svg",
   },
   {
     no: "02",
@@ -48,6 +52,8 @@ const COURSES: Course[] = [
     description:
       "Voice through address, intimacy, rhythm, distance and the letter that changes because somebody specific is receiving it.",
     className: styles.correspondence,
+    artifactSrc: "/wrb/course-artifacts/02_correspondence-society.svg",
+    stampSrc: "/wrb/course-stamps/02_correspondence-society_stamp.svg",
   },
   {
     no: "03",
@@ -62,6 +68,8 @@ const COURSES: Course[] = [
     description:
       "Dialogue as appetite and friction: interruption, evasion, status, subtext and what sits on the table between two people.",
     className: styles.dining,
+    artifactSrc: "/wrb/course-artifacts/03_dining-room-dialogue.svg",
+    stampSrc: "/wrb/course-stamps/03_dining-room-dialogue_stamp.svg",
   },
   {
     no: "04",
@@ -76,6 +84,8 @@ const COURSES: Course[] = [
     description:
       "Plot as an occupied building: arrivals, exits, collisions, escalation and the consequences of putting the wrong people in neighbouring rooms.",
     className: styles.hotel,
+    artifactSrc: "/wrb/course-artifacts/04_alpine-hotel-ledger.svg",
+    stampSrc: "/wrb/course-stamps/04_alpine-hotel-ledger_stamp.svg",
   },
   {
     no: "05",
@@ -90,6 +100,8 @@ const COURSES: Course[] = [
     description:
       "Character through baggage, route, contradiction, behaviour and what a person reveals when they are forced to move.",
     className: styles.airborne,
+    artifactSrc: "/wrb/course-artifacts/05_airborne-story-permit.svg",
+    stampSrc: "/wrb/course-stamps/05_airborne-story-permit_stamp.svg",
     perforated: true,
   },
   {
@@ -105,6 +117,8 @@ const COURSES: Course[] = [
     description:
       "Scenewriting through entrance, exit, object, gesture, pressure and the exact moment after which the room is no longer the same.",
     className: styles.cinema,
+    artifactSrc: "/wrb/course-artifacts/06_programme-unmade-pictures.svg",
+    stampSrc: "/wrb/course-stamps/06_programme-unmade-pictures_stamp.svg",
     perforated: true,
   },
 ];
@@ -113,23 +127,20 @@ function CourseTicket({ course }: { course: Course }) {
   return (
     <>
       <span className={styles.depth} aria-hidden="true" />
-      <div className={`${styles.ticket} ${course.className}`}>
-        {course.perforated ? <span className={styles.perf} aria-hidden="true" /> : null}
-        <div className={styles.meta}>
-          <span>THE WRITING ROOM BUREAU • COURSE {course.no}</span>
-          <span>{course.kind}</span>
-        </div>
-        <h3 className={styles.title}>{course.title}</h3>
-        <p className={styles.craft}>{course.craft}</p>
-        <div className={styles.rule} />
-        <p className={styles.copy}>
-          {course.line1}
-          <br />
-          {course.line2}
-        </p>
-        <span className={styles.serial}>SERIAL {course.serial} • AUTUMN TERM</span>
-        <span className={styles.sideNumber} aria-hidden="true">{course.no}</span>
-        <span className={styles.stamp}>{course.stamp}</span>
+      <div className={`${styles.ticketAssetShell} ${course.className}`}>
+        <img
+          className={styles.ticketAsset}
+          src={course.artifactSrc}
+          alt={`${course.title} — ${course.kind}`}
+          draggable={false}
+        />
+        <img
+          className={styles.stampAsset}
+          src={course.stampSrc}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+        />
       </div>
     </>
   );
