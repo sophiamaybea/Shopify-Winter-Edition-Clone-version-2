@@ -136,7 +136,14 @@ function CourseTicket({ course }: { course: Course }) {
 }
 
 export function WritingRoomBureauCourses() {
-  const [mount, setMount] = useState<HTMLElement | null>(null);
+  const [mount] = useState<HTMLElement | null>(() => {
+    if (typeof document === "undefined") return null;
+    const portal = document.createElement("div");
+    portal.dataset.wrbCoursePortal = "true";
+    portal.style.width = "100%";
+    portal.style.pointerEvents = "auto";
+    return portal;
+  });
   const [active, setActive] = useState<Course | null>(null);
   const rootRef = useRef<HTMLElement | null>(null);
   const hiddenNodes = useRef<Array<{ element: HTMLElement; display: string }>>([]);
@@ -149,10 +156,7 @@ export function WritingRoomBureauCourses() {
     const section = document.querySelector<HTMLElement>('[data-section-id="online"]');
     if (!section) return;
 
-    const portal = document.createElement("div");
-    portal.dataset.wrbCoursePortal = "true";
-    portal.style.width = "100%";
-    portal.style.pointerEvents = "auto";
+    if (!mount) return;
 
     hiddenNodes.current = Array.from(section.children)
       .filter((child): child is HTMLElement => child instanceof HTMLElement)
@@ -164,17 +168,15 @@ export function WritingRoomBureauCourses() {
 
     section.style.pointerEvents = "auto";
     section.style.overflow = "visible";
-    section.appendChild(portal);
-    setMount(portal);
+    section.appendChild(mount);
 
     return () => {
       hiddenNodes.current.forEach(({ element, display }) => {
         element.style.display = display;
       });
-      portal.remove();
-      setMount(null);
+      mount.remove();
     };
-  }, []);
+  }, [mount]);
 
   useEffect(() => {
     if (!mount || !rootRef.current) return;
