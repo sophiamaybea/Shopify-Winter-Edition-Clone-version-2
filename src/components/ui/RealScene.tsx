@@ -717,6 +717,7 @@ export function RealScene({
     }
 
     function loadImagePlane(path: string, assetKey: string) {
+      const PLANE_SCALE = 3.5;
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.src = path;
@@ -750,7 +751,7 @@ export function RealScene({
           transparent: true,
           depthWrite: false,
         });
-        const plane = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+        const plane = new THREE.Mesh(new THREE.PlaneGeometry(PLANE_SCALE, PLANE_SCALE), material);
         plane.scale.set(1, aspect, 1);
         const group = new THREE.Group();
         group.add(plane);
@@ -771,7 +772,8 @@ export function RealScene({
     function loadVideoPlane(
       path: string,
       fallbackPath: string,
-      assetKey: string
+      assetKey: string,
+      loop = false
     ) {
       const video = document.createElement("video");
       video.src = path;
@@ -779,6 +781,7 @@ export function RealScene({
       video.playsInline = true;
       video.preload = "auto";
       video.crossOrigin = "anonymous";
+      if (loop) video.loop = true;
       ownedVideos.add(video);
       const onReady = () => {
         if (disposed) return;
@@ -801,6 +804,7 @@ export function RealScene({
         videoGroups.push({ key: assetKey, video });
         applyAssetTransform(assetKey, group, camState.t);
         scrubAnimationsTo(camState.t);
+        if (loop) video.play().catch(() => {});
       };
       const onError = () => loadTexturePlane(fallbackPath, assetKey);
       video.addEventListener("loadedmetadata", onReady, { once: true });
@@ -976,7 +980,7 @@ export function RealScene({
       if (asset.kind === "texture") loadTexturePlane(asset.src, key);
       else if (asset.kind === "image") loadImagePlane(asset.src, key);
       else if (asset.kind === "video")
-        loadVideoPlane(asset.src, asset.fallback, key);
+        loadVideoPlane(asset.src, asset.fallback, key, asset.loop);
       else loadModel(asset.src, key);
     });
     if (backgroundModel) loadModel(backgroundModel, undefined, true);

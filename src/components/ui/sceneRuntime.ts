@@ -498,7 +498,7 @@ export class SceneRuntime {
       return;
     }
 
-    this.loadVideoInto(asset.src, asset.fallback, destination, assetKey);
+    this.loadVideoInto(asset.src, asset.fallback, destination, assetKey, asset.loop);
   }
 
   private loadTextureInto(
@@ -547,6 +547,7 @@ export class SceneRuntime {
     destination: THREE.Group,
     assetKey: string
   ) {
+    const PLANE_SCALE = 3.5;
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.src = path;
@@ -592,7 +593,7 @@ export class SceneRuntime {
         depthWrite: false,
       });
       const plane = new THREE.Mesh(
-        new THREE.PlaneGeometry(2, 2),
+        new THREE.PlaneGeometry(PLANE_SCALE, PLANE_SCALE),
         material
       );
       plane.scale.set(1, aspect, 1);
@@ -615,7 +616,8 @@ export class SceneRuntime {
     path: string,
     fallbackPath: string,
     destination: THREE.Group,
-    assetKey: string
+    assetKey: string,
+    loop = false
   ) {
     const video = document.createElement("video");
     video.src = path;
@@ -623,6 +625,7 @@ export class SceneRuntime {
     video.playsInline = true;
     video.preload = "auto";
     video.crossOrigin = "anonymous";
+    if (loop) video.loop = true;
     this.ownedVideos.add(video);
 
     const onReady = () => {
@@ -643,6 +646,7 @@ export class SceneRuntime {
       this.videoGroups.push({ key: assetKey, video });
       this.applyAssetTransform(assetKey, destination, this.currentTime);
       this.scrubAnimationsTo(this.currentTime);
+      if (loop) video.play().catch(() => {});
       this.markAssetLoaded();
     };
     const onError = () => {
