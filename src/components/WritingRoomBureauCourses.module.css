@@ -98,6 +98,46 @@
   opacity: .66;
 }
 
+.ticketAssetShell {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  overflow: visible;
+  border-radius: var(--radius, 8px);
+  transform: translateZ(20px);
+  transform-style: preserve-3d;
+  transition: filter .25s ease;
+}
+
+.ticketAsset {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: inherit;
+  user-select: none;
+  pointer-events: none;
+  filter: drop-shadow(0 14px 17px rgba(51, 36, 28, .16));
+}
+
+.stampAsset {
+  position: absolute;
+  right: 3.5%;
+  bottom: -2%;
+  z-index: 5;
+  width: 31%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  mix-blend-mode: multiply;
+  transform: rotate(-5deg) translateZ(34px);
+  transform-origin: 50% 50%;
+  filter: drop-shadow(0 5px 5px rgba(55, 34, 28, .12));
+}
+
+.card:hover .ticketAssetShell {
+  filter: brightness(1.015) contrast(1.01);
+}
+
 .ticket {
   position: relative;
   z-index: 2;
@@ -342,5 +382,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card, .ticket, .stamp { transform: none !important; }
+  .card, .ticket, .stamp, .ticketAssetShell, .stampAsset { transform: none !important; }
 }
