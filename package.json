@@ -10,6 +10,7 @@
     "test:visual": "playwright test tests/visual"
   },
   "dependencies": {
+    "@base44/sdk": "^0.8.48",
     "@rive-app/canvas": "^2.39.1",
     "framer-motion": "^12.42.2",
     "gsap": "^3.15.0",
