@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { base44 } from "@/lib/base44Client";
 import styles from "./CreativeDirector.module.css";
@@ -147,10 +149,12 @@ export function CreativeDirector() {
   }, []);
 
   useEffect(() => {
-    if (open && user) {
+    if (!open || !user) return;
+    const timer = window.setTimeout(() => {
       loadHealth();
       loadDrafts();
-    }
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [loadDrafts, loadHealth, open, user]);
 
   useEffect(() => {
@@ -358,7 +362,7 @@ export function CreativeDirector() {
       const data = errorData(error);
       setNotice({ type: "error", text: data?.message || "Could not reject the draft." });
     }
-  }, [invoke, loadDrafts, previewDraft?.id]);
+  }, [invoke, loadDrafts, previewDraft]);
 
   const refreshStale = useCallback(async (draftId: string) => {
     setPreviewDraft(null);
@@ -551,7 +555,7 @@ export function CreativeDirector() {
             <div className={styles.modalHeader}>
               <div>
                 <div className={styles.modalTitle}>{previewDraft.title}</div>
-                <div className={styles.modalStatus}>rev {previewDraft.revision || 1} · sandbox="allow-scripts"</div>
+                <div className={styles.modalStatus}>rev {previewDraft.revision || 1} · sandbox: allow-scripts</div>
               </div>
               <button type="button" className={styles.iconButton} onClick={() => { setPreviewDraft(null); setApprovalToken(null); setStaleDraftId(null); }} aria-label="Close preview">×</button>
             </div>
