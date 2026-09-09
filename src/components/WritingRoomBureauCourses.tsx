@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import styles from "./WritingRoomBureauCourses.module.css";
+import { WritingRoomBureauThree } from "./WritingRoomBureauThree";
 
 type Course = {
   no: string;
@@ -269,6 +270,8 @@ export function WritingRoomBureauCourses() {
           progress marker and collectible.
         </p>
       </header>
+
+      <WritingRoomBureauThree />
 
       <div className={styles.grid} data-wrb-grid>
         {COURSES.map((course, index) => (
