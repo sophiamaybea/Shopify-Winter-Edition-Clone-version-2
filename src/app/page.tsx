@@ -4,12 +4,10 @@ import { CapturedPage } from "@/components/CapturedPage";
 import { RiveEnhancements } from "@/components/RiveEnhancements";
 import { SceneLayer } from "@/components/SceneLayer";
 import { WritingRoomBureauCourses } from "@/components/WritingRoomBureauCourses";
-import { WritingRoomWorld } from "@/components/WritingRoomWorld";
 
 export default function Home() {
   return (
     <div id="top">
-      <WritingRoomWorld />
       <SceneLayer />
       <CapturedPage />
       <WritingRoomBureauCourses />
